@@ -1,5 +1,53 @@
-﻿<h3>JugadorCreate</h3>
+﻿@page "/JugadorCreate/Create"
+@using RegistroJugadores.Models
+@using RegistroJugadores.Services
+@inject JugadoresService JugadoresService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Registro de Jugadores</PageTitle>
+
+<div class="container mt-4">
+	<div class="card shadow-sm>">
+		<div class="card-header bd-white text-center">
+			<h5 class="mb-0">Agregar nuevo jugador</h5>
+		</div>
+		<div class="card-body">
+			<EditForm Model="Jugadores" OnInvalidSubmit="GuardarJugador">
+				<DataAnnotationsValidator />
+				<div class="row">
+					<div class="col-md-6 mb-3">
+						<label for="Nombre" class="form-label fw-bold">Nombre:</label>
+						<InputText id="nombre" class="form-control" @bind-Value="Jugadores.Nombre" />
+						<ValidationMessage For="() => Jugadores.Nombre" />
+				</div>
+				<div class="col-md-6 mb-3">
+					<label for="Partidas" class="form-label fw-bold">Partidas</label>
+					<InputNumber id="Partidas" class="form-control" @bind-Value="Jugadores.Partidas" />
+					<ValidationMessage For="() => Jugadores.Partidas" />
+				</div>
+				</div>
+				<div class="d-flex justify-content-end gap-2 mt-3">
+					<Button type="submit" class="btn btn-primary">
+						<i class="bi bi-save me-1"></i> Guardar
+					</Button>
+					<a href="/Jugadores/Index" class="btn btn-secondary">
+						<i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+						</a>
+				</div>
+			</EditForm>
+		</div>
+	</div>
+</div>
 
 @code {
-
+	public Jugadores Jugadores { get; set; } = new();
+	private async Task GuardarJugador()
+	{
+		if (await JugadoresService.Guardar(Jugadores))
+		{
+			NavigationManager.NavigateTo("/Jugadores/Index");
+		}
+		
+	}
 }
