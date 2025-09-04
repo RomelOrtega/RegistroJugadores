@@ -30,13 +30,13 @@
 						</div>
 					</div>
 					<div class="d-flex justify-content-end gap-2 mt-3">
-						<Button type="submit" class="btn btn-primary">
+						<button type="submit" class="btn btn-primary">
 							<i class="bi bi-save me-1"></i> Guardar Cambios
-						</Button>
+						</button>
 						<a href="/Jugadores/Index" class="btn btn-secondary">
 							<i class="bi bi-arrow-left-circle me-1"></i> Cancelar
 						</a>
-						<button type="button" class="btn btn-danger" onclick= "() => MostrarModalEliminar = true">
+						<button type="button" class="btn btn-danger" @onclick= "() => MostrarModalEliminar = true">
 							<i class="bi bi-trash me-1"></i> Eliminar
 						</button>
 					</div>
