@@ -10,8 +10,8 @@ namespace RegistroJugadores.Models
 
 
 
-        [Range(0, int.MaxValue, ErrorMessage = "No puede ser negativo")]
-        public int Partidas { get; set; }
+        [Range(0, double.MaxValue, ErrorMessage = "No puede ser negativo")]
+        public double Partidas { get; set; }
 
     }
 }
