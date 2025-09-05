@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Registro de Jugadores</PageTitle>
+<PageTitle>Index de Jugadores</PageTitle>
 
 <div class="container mt-4">
 	<div class="card shadow-sm">
@@ -22,8 +22,8 @@
 						<ValidationMessage For="() => Jugadores.Nombre" />
 				</div>
 				<div class="col-md-6 mb-3">
-					<label for="Partidas" class="form-label fw-bold">Partidas</label>
-					<InputNumber id="Partidas" class="form-control" @bind-Value="Jugadores.Partidas" />
+					<label for="Partidas" class="form-label fw-bold">Partidas:</label>
+					<InputNumber id="Partidas" class="form-control" @bind-Value="Jugadores.Partidas" onforminput="0" />
 					<ValidationMessage For="() => Jugadores.Partidas" />
 				</div>
 				</div>
@@ -36,15 +36,28 @@
 						</a>
 				</div>
 			</EditForm>
+			@if(!string.IsNullOrWhiteSpace(ErrorMessage))
+			{
+				<div class="alert alert-danger mt-3" role="alert">
+					@ErrorMessage
+				</div>
+			}
 		</div>
 	</div>
 </div>
-
+	
 @code {
 	public Jugadores Jugadores { get; set; } = new();
+	public string ErrorMessage { get; set; } = string.Empty;
+
 	private async Task GuardarJugador()
 	{
-		if (await JugadoresService.Guardar(Jugadores))
+		if(await JugadoresService.ExisteNombre(Jugadores.Nombre))
+		{
+			ErrorMessage = "Este nombre ya ha sido agregado.";
+			return;
+		}
+		if(await JugadoresService.Guardar(Jugadores))
 		{
 			NavigationManager.NavigateTo("/Jugador/Index");
 		}
