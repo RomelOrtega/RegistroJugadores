@@ -17,6 +17,10 @@
 			<div class="card-body">
 				<EditForm Model="Jugadores" OnValidSubmit="GuardarCambios">
 					<DataAnnotationsValidator />
+					@if (!string.IsNullOrWhiteSpace(MensajeError))
+					{
+						<div class="alert alert-danger text-center">@MensajeError</div>
+					}
 					<div class="row">
 						<div class="col-md-6 mb-3">
 							<label for="nombre" class="form-label fw-bold">Nombre:</label>
@@ -83,6 +87,7 @@ else
 	public int JugadorId { get; set; }
 	public Jugadores? Jugadores { get; set; }
 	private bool MostrarModalEliminar { get; set; } = false;
+	private string MensajeError { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -92,6 +97,11 @@ else
 	{
 		if (Jugadores != null)
 		{
+			if(await JugadoresService.YaExisteNombre(Jugadores.Nombre, Jugadores.JugadorId))
+			{
+				MensajeError = "Ya existe un jugador con ese nombre.";
+				return;
+			}
 			if (await JugadoresService.Guardar(Jugadores))
 			{
 				NavigationManager.NavigateTo("/Jugador/Index");
