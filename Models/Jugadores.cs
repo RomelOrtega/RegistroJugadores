@@ -6,9 +6,12 @@ namespace RegistroJugadores.Models
         [Key]
         public int JugadorId { get; set; }
         [Required(ErrorMessage = "Este campo es requerido")]
-
         public string Nombre { get; set; } = null!;
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public double Partidas { get; set; }
+
+
+
+        [Range(0, int.MaxValue, ErrorMessage = "No puede ser negativo")]
+        public int Partidas { get; set; }
+
     }
 }
