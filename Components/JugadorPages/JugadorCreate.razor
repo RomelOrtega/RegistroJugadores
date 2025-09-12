@@ -52,15 +52,15 @@
 
 	private async Task GuardarJugador()
 	{
-		if(await JugadoresService.ExisteNombre(Jugadores.Nombre))
+		if (await JugadoresService.Existe(j => j.Nombre.ToLower().Trim() == Jugadores.Nombre.ToLower().Trim()))
 		{
 			ErrorMessage = "Este nombre ya ha sido agregado.";
 			return;
 		}
-		if(await JugadoresService.Guardar(Jugadores))
+		if (await JugadoresService.Guardar(Jugadores))
 		{
 			NavigationManager.NavigateTo("/Jugador/Index");
 		}
-		
 	}
+
 }
