@@ -87,44 +87,41 @@
 
 @if (MostrarModalEliminar)
 {
-	<div class="modal d-block" tabindex="-1" role="dialog" style="background-color:rgba(0,0,0,0.5);">
-		<div class="modal-dialog" role="document" style=" max-width: 500px;">
-			<div class="modal-content shadow" style="width: 100%; max-width: 600px; margin: auto;">
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header bg-primary text-white border-bottom-0">
+				<h5 class="card-title mb-0">Eliminar Jugador</h5>
 			</div>
-			<div class="modal-content">
-				<div class="modal-header bg-primary text-white">
-					<h5 class="modal-title">Eliminar Jugador</h5>
-					<button type="button" class="btn-close btn-close-white" @onclick="() => MostrarModalEliminar = false"></button>
+
+			<div class="card-body text-danger py-3">
+				<h6 class="card-title mb-0">¿Estás seguro de que deseas eliminar este jugador?</h6>
+			</div>
+
+			<div class="card shadow-sm mx-3 mb-3">
+				<div class="card-header bg-light">
+					<h5 class="card-title mb-0"><strong>Datos del jugador</strong></h5>
 				</div>
-				<div class="modal-body">
-					<p class="text-danger fs-5 mb-4">
-					 <strong>¿Estás seguro de que deseas eliminar este jugador?</strong>
-				</p>
-				<div class="card shadow-sm">
-					<div class="card-header bg-secondary bg-opacity-10">
-						<h6 class="mb-3 text-secondary">Datos del Jugador</h6>
-					</div>
-					<div class="card-body">
-						@if(JugadorAeliminar != null)
-						{
-							<p class="mb-2"><strong>JugadorID:</strong> @JugadorAeliminar?.JugadorId</p>
-							<p class="mb-2"><strong>Nombres:</strong> @JugadorAeliminar?.Nombre</p>
-							<p class="mb-2"><strong>Partidas:</strong> @JugadorAeliminar?.Partidas</p>
-						}
-					</div>
+				<div class="card-body">
+					@if (JugadorAeliminar != null)
+					{
+						<p class="mb-2"><strong>JugadorID:</strong> @JugadorAeliminar?.JugadorId</p>
+						<p class="mb-2"><strong>Nombres:</strong> @JugadorAeliminar?.Nombre</p>
+						<p class="mb-2"><strong>Partidas:</strong> @JugadorAeliminar?.Partidas</p>
+					}
 				</div>
-				</div>
-				<div class="modal-footer d-flex justify-conent-between">
-					<button type="button" class="btn btn-danger" @onclick="ConfirmarEliminacion">
-						<i class="bi bi-trash me-1"></i> Eliminar
-						</button>
-					<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
-						<i class="bi bi-arrow-left-circle me-1"></i> Volver
-					</button>
-				</div>
+			</div>
+
+			<div class="card-footer bg-white d-flex gap-2 p-3">
+				<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
+					<i class="bi bi-arrow-left-circle me-1"></i> Volver
+				</button>
+				<button type="button" class="btn btn-outline-danger" @onclick="ConfirmarEliminacion">
+					<i class="bi bi-trash me-1"></i> Eliminar
+				</button>
 			</div>
 		</div>
-	</div>	
+	</div>
+
 }
 
 @code {
