@@ -58,30 +58,28 @@ else
 
 @if (MostrarModalEliminar)
 {
-	<div class="modal d-block" tabindex="-1" role="dialog" style="background-color:rgba(0,0,0,0.5);">
-			<div class="modal-content shadow" style="width: 100%; max-width: 600px; margin: auto;">
+		<div class= "card shadow-lg">
+			<div class="modal-header text-center bg-primary text-white border-botton-0">
+				<h5 class="card-title">Eliminar Jugador</h5>
+					
 			</div>
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Confirmar Eliminación</h5>
-					<button type="button" class="btn-close" @onclick="() => MostrarModalEliminar = false"></button>
-				</div>
-				<div class="modal-header bg-primary text-white">
-					<div class="border border-2 rounded p-3 mb-3 bg-light">
-					</div>
-					<div class="text-danger fs-5 mb4" role="alert">
-						<strong>¿Estás seguro de que deseas eliminar este jugador?</strong>
-					</div>
-				</div>
-				<div class="modal-footer d-flex justify-conent-between">
-					<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
-						<i class="bi bi-arrow-left-circle me-1"></i>Volver
-					</button>
-					<button type="button" class="btn btn-danger" @onclick="ConfirmarEliminacion"><i class="bi bi-trash me-1"></i>Eliminar</button>
-				</div>
+
+			<div class="card-header text-danger">
+				<h6 class="card-title">¿Estás seguro de que deseas eliminar este jugador?</h6>
 			</div>
+
+		<div class="card-footer d-flex justiy-conent-between">
+			<div class="btn-group" role="group" aria - label="Grupo de acciones">
+			</div>
+
+			<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false"> 
+				<i class="bi bi-arrow-left-circle me-1"></i> Volver 
+				</button>
+			<button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="ConfirmarEliminacion"> Eliminar </button>
 		</div>
+	</div>
 }
+
 @code{
 	[Parameter]
 	public int JugadorId { get; set; }
@@ -97,7 +95,9 @@ else
 	{
 		if (Jugadores != null)
 		{
-			if(await JugadoresService.YaExisteNombre(Jugadores.Nombre, Jugadores.JugadorId))
+			if (await JugadoresService.Existe(j =>
+				j.Nombre.ToLower().Trim() == Jugadores.Nombre.ToLower().Trim() &&
+				j.JugadorId != Jugadores.JugadorId))
 			{
 				MensajeError = "Ya existe un jugador con ese nombre.";
 				return;
