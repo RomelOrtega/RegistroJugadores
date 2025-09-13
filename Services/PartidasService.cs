@@ -32,17 +32,11 @@ namespace RegistroJugadores.Services
         }
         private async Task<bool> Insertar(Partidas partida)
         {
-            try
-            {
-                await using var contexto = await _DbFactory.CreateDbContextAsync();
-                contexto.Partidas.Add(partida);
-                return await contexto.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _Logger.LogError(ex, "Error insertando la partida de {Jugador1Id} VS {Jugador2Id}", partida.Jugador1Id, partida.Jugador2Id);
-                return false;
-            }
+            await using var contexto = await _DbFactory.CreateDbContextAsync();
+            contexto.Partidas.Add(partida);
+            _Logger.LogInformation("Partida insertada");
+            return await contexto.SaveChangesAsync() > 0;
+
         }
 
         private async Task<bool> Modificar(Partidas partida)
@@ -50,7 +44,8 @@ namespace RegistroJugadores.Services
             try
             {
                 await using var contexto = await _DbFactory.CreateDbContextAsync();
-                contexto.Partidas.Update(partida);
+                contexto.Update(partida);
+                _Logger.LogInformation("Partida modificada");
                 return await contexto.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
@@ -61,16 +56,15 @@ namespace RegistroJugadores.Services
         }
         public async Task<bool> Guardar(Partidas partida)
         {
-            try
+            if(!await Existe(partida.PartidaId))
             {
-                return !await Existe(partida.PartidaId)
-                ? await Insertar(partida)
-                : await Modificar(partida);
+                _Logger.LogInformation("Insertando nueva partida para jugador1:{Jugador}", partida.Jugador1?.Nombre);
+                return await Insertar(partida);
             }
-            catch (Exception ex)
+            else
             {
-                _Logger.LogError(ex, "Error guardando la partida {PartidaId}", partida.PartidaId);
-                return false;
+                _Logger.LogInformation("Modificando partida existente {PartidaId}", partida.PartidaId);
+                return await Modificar(partida);
             }
         }
         public async Task<Partidas> Buscar(int partidaId)
