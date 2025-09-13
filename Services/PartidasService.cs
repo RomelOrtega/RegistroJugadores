@@ -61,6 +61,7 @@ namespace RegistroJugadores.Services
                 _Logger.LogWarning("Mismo jugador en la partida: {Id}", partida.Jugador1Id);
                 return false;
             }
+
             if(!await Existe(partida.PartidaId))
             {
                 _Logger.LogInformation("Insertando nueva partida para jugador1:{Jugador}", partida.Jugador1?.Nombre);
