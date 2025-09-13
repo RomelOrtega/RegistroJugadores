@@ -1,0 +1,130 @@
+﻿@page "/Partidas/Create"
+@using RegistroJugadores.Models
+@using RegistroJugadores.Services
+@inject PartidasService PartidasService
+@inject JugadoresService JugadoresService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Nueva Partida</PageTitle>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white text-center">
+            <h5 class="mb-0">Crear nueva partida</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="Partida" OnValidSubmit="GuardarPartida">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="jugador1" class="form-label fw-bold">Jugador 1:</label>
+                        <InputSelect id="jugador1" class="form-select" @bind-Value="Partida.Jugador1Id">
+                            <option value="0">Seleccione un jugador</option>
+                            @foreach (var jugador in ListaJugadores)
+                            {
+                                <option value="@jugador.JugadorId">@jugador.Nombre</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => Partida.Jugador1Id" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="jugador2" class="form-label fw-bold">Jugador 2:</label>
+                        <InputSelect id="jugador2" class="form-select" @bind-Value="Jugador2IdString">
+                            <option value="">-- Esperando jugador --</option>
+                            @foreach (var jugador in ListaJugadores.Where(j => j.JugadorId != Partida.Jugador1Id))
+                            {
+                                <option value="@jugador.JugadorId">@jugador.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="estado" class="form-label fw-bold">Estado de la Partida:</label>
+                        <InputSelect id="estado" class="form-select" @bind-Value="Partida.EstadoPartida">
+                            <option value="Esperando">Esperando</option>
+                            <option value="EnCurso">En Curso</option>
+                            <option value="Finalizada">Finalizada</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </InputSelect>
+                        <ValidationMessage For="() => Partida.EstadoPartida" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="fechaInicio" class="form-label fw-bold">Fecha de Inicio:</label>
+                        <InputDate id="fechaInicio" class="form-control" @bind-Value="FechaInicio" />
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Crear Partida
+                    </button>
+                    <a href="/Partidas/Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+                    </a>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="alert alert-danger mt-3" role="alert">
+                    @ErrorMessage
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    public Partidas Partida { get; set; } = new Partidas
+    {
+        EstadoPartida = "Esperando",
+        EstadoTablero = "         ",
+        FechaInicio = DateTime.UtcNow
+    };
+
+    public List<Jugadores> ListaJugadores { get; set; } = new();
+    public string ErrorMessage { get; set; } = string.Empty;
+    public DateTime FechaInicio { get; set; } = DateTime.Now;
+
+    private string? Jugador2IdString { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaJugadores = await JugadoresService.Listar(j => true);
+    }
+
+    private async Task GuardarPartida()
+    {
+        if (Partida.Jugador1Id == 0)
+        {
+            ErrorMessage = "Debe seleccionar al menos el Jugador 1.";
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(Jugador2IdString))
+        {
+            Partida.Jugador2Id = int.Parse(Jugador2IdString);
+            if (Partida.Jugador1Id == Partida.Jugador2Id)
+            {
+                ErrorMessage = "Los jugadores deben ser diferentes.";
+                return;
+            }
+        }
+
+        Partida.TurnoJugadorId = Partida.Jugador1Id;
+        Partida.FechaInicio = FechaInicio.ToUniversalTime();
+
+        if (Partida.EstadoPartida == "Finalizada")
+            Partida.FechaFin = DateTime.UtcNow;
+
+        if (await PartidasService.Guardar(Partida))
+            NavigationManager.NavigateTo("/Partidas/Index");
+        else
+            ErrorMessage = "Error al guardar la partida. Por favor, intente nuevamente.";
+    }
+}

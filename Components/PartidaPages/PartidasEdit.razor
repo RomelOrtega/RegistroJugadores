@@ -1,0 +1,237 @@
+﻿@page "/Partidas/Edit/{PartidaId:int}"
+@using RegistroJugadores.Models
+@using RegistroJugadores.Services
+@inject PartidasService PartidasService
+@inject JugadoresService JugadoresService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Editar Partida</PageTitle>
+
+@if (Partida != null)
+{
+	<div class="container mt-4">
+		<div class="card shadow-sm">
+			<div class="card-header bg-white text-center">
+				<h5 class="mb-0">Editar Partida #@PartidaId</h5>
+			</div>
+			<div class="card-body">
+				<EditForm Model="Partida" OnValidSubmit="GuardarCambios">
+					<DataAnnotationsValidator />
+
+					@if (!string.IsNullOrWhiteSpace(MensajeError))
+					{
+						<div class="alert alert-danger text-center">@MensajeError</div>
+					}
+
+					<div class="row">
+						<div class="col-md-6 mb-3">
+							<label for="jugador1" class="form-label fw-bold">Jugador 1:</label>
+							<InputSelect id="jugador1" class="form-select" @bind-Value="Partida.Jugador1Id">
+								@foreach (var jugador in ListaJugadores)
+								{
+									<option value="@jugador.JugadorId">@jugador.Nombre</option>
+								}
+							</InputSelect>
+							<ValidationMessage For="() => Partida.Jugador1Id" />
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label for="jugador2" class="form-label fw-bold">Jugador 2:</label>
+							<InputSelect id="jugador2" class="form-select" @bind-Value="Jugador2IdString">
+								<option value="">-- Sin jugador 2 --</option>
+								@foreach (var jugador in ListaJugadores.Where(j => j.JugadorId != Partida.Jugador1Id))
+								{
+									<option value="@jugador.JugadorId">@jugador.Nombre</option>
+								}
+							</InputSelect>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-4 mb-3">
+							<label for="estado" class="form-label fw-bold">Estado:</label>
+							<InputSelect id="estado" class="form-select" @bind-Value="Partida.EstadoPartida">
+								<option value="Esperando">Esperando</option>
+								<option value="EnCurso">En Curso</option>
+								<option value="Finalizada">Finalizada</option>
+								<option value="Cancelada">Cancelada</option>
+							</InputSelect>
+							<ValidationMessage For="() => Partida.EstadoPartida" />
+						</div>
+
+						<div class="col-md-4 mb-3">
+							<label for="ganador" class="form-label fw-bold">Ganador:</label>
+							<InputSelect id="ganador" class="form-select" @bind-Value="GanadorIdString">
+								<option value="">-- Sin ganador --</option>
+								<option value="@Partida.Jugador1Id">@NombreJugador1</option>
+								@if (Partida.Jugador2Id.HasValue)
+								{
+									<option value="@Partida.Jugador2Id.Value">@NombreJugador2</option>
+								}
+							</InputSelect>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label class="form-label fw-bold">Fechas:</label>
+							<div class="card">
+								<div class="card-body">
+									<div class="mb-2">
+										<strong>Inicio:</strong> @Partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+									</div>
+									@if (Partida.FechaFin.HasValue)
+									{
+										<div>
+											<strong>Fin:</strong> @Partida.FechaFin.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+										</div>
+									}
+									else
+									{
+										<div class="text-muted">
+											<strong>Fin:</strong> Partida en curso
+										</div>
+									}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Botones DENTRO del formulario -->
+					<div class="d-flex justify-content-end gap-2 mt-3">
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-save me-1"></i> Guardar Cambios
+						</button>
+						<a href="/Partidas/Index" class="btn btn-secondary">
+							<i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+						</a>
+						<button type="button" class="btn btn-danger" @onclick="() => MostrarModalEliminar = true">
+							<i class="bi bi-trash me-1"></i> Eliminar
+						</button>
+					</div>
+
+				</EditForm>
+			</div>
+		</div>
+	</div>
+}
+else
+{
+	<div class="text-center mt-5">
+		<p class="lead text-muted">Cargando datos de la partida...</p>
+	</div>
+}
+
+@if (MostrarModalEliminar)
+{
+	<div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title">Eliminar Partida</h5>
+				</div>
+				<div class="modal-body">
+					<p>¿Estás seguro de que deseas eliminar esta partida?</p>
+					<div class="alert alert-warning">
+						<strong>Partida #@PartidaId</strong><br />
+						@NombreJugador1 vs @(string.IsNullOrEmpty(NombreJugador2) ? "Esperando jugador" : NombreJugador2)
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
+						<i class="bi bi-x-circle me-1"></i> Cancelar
+					</button>
+					<button type="button" class="btn btn-danger" @onclick="ConfirmarEliminacion">
+						<i class="bi bi-trash me-1"></i> Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int PartidaId { get; set; }
+
+	public Partidas? Partida { get; set; }
+	public List<Jugadores> ListaJugadores { get; set; } = new();
+
+	private bool MostrarModalEliminar { get; set; } = false;
+	private string MensajeError { get; set; } = string.Empty;
+
+	private string? Jugador2IdString { get; set; }
+	private string? GanadorIdString { get; set; }
+
+	private string NombreJugador1 => ListaJugadores.FirstOrDefault(j => j.JugadorId == Partida?.Jugador1Id)?.Nombre ?? "Jugador 1";
+	private string NombreJugador2 => Partida?.Jugador2Id.HasValue == true
+		? ListaJugadores.FirstOrDefault(j => j.JugadorId == Partida.Jugador2Id)?.Nombre ?? "Jugador 2"
+		: "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		ListaJugadores = await JugadoresService.Listar(j => true);
+		Partida = await PartidasService.Buscar(PartidaId);
+
+		if (Partida != null)
+		{
+			Jugador2IdString = Partida.Jugador2Id?.ToString() ?? "";
+			GanadorIdString = Partida.GanadorId?.ToString() ?? "";
+		}
+	}
+
+	private async Task GuardarCambios()
+	{
+		if (Partida != null)
+		{
+			if (!string.IsNullOrEmpty(Jugador2IdString))
+			{
+				Partida.Jugador2Id = int.Parse(Jugador2IdString);
+				if (Partida.Jugador1Id == Partida.Jugador2Id)
+				{
+					MensajeError = "Los jugadores deben ser diferentes.";
+					return;
+				}
+			}
+			else
+			{
+				Partida.Jugador2Id = null;
+			}
+
+			if (!string.IsNullOrEmpty(GanadorIdString))
+			{
+				Partida.GanadorId = int.Parse(GanadorIdString);
+			}
+			else
+			{
+				Partida.GanadorId = null;
+			}
+
+			if (Partida.EstadoPartida == "Finalizada" && !Partida.FechaFin.HasValue)
+			{
+				Partida.FechaFin = DateTime.UtcNow;
+			}
+			else if (Partida.EstadoPartida != "Finalizada")
+			{
+				Partida.FechaFin = null;
+			}
+
+			if (await PartidasService.Guardar(Partida))
+			{
+				NavigationManager.NavigateTo("/Partidas/Index");
+			}
+			else
+			{
+				MensajeError = "Error al guardar los cambios.";
+			}
+		}
+	}
+
+	private async Task ConfirmarEliminacion()
+	{
+		if (await PartidasService.Eliminar(PartidaId))
+		{
+			MostrarModalEliminar = false;
+			NavigationManager.NavigateTo("/Partidas/Index");
+		}
+	}
+}
