@@ -18,7 +18,7 @@ namespace RegistroJugadores.DAL
                 .HasOne(p => p.Jugador1)
                 .WithMany()
                 .HasForeignKey(p => p.Jugador1Id)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.NoAction); 
 
             modelBuilder.Entity<Partidas>()
                 .HasOne(p => p.Jugador2)
