@@ -11,10 +11,10 @@ namespace RegistroJugadores.Models
 
 
         [Range(0, double.MaxValue, ErrorMessage = "No puede ser negativo")]
-        public double Partidas { get; set; }
+        public double Victorias { get; set; } =0;
 
-public int Empates {get; set;} =0;
-public int Derrotas {grt; set;} =0;
+        public int Empates {get; set;} =0;
+        public int Derrotas {grt; set;} =0;
 
 
     }
