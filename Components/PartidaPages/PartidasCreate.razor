@@ -1,4 +1,4 @@
-﻿@page "/Partidas/Create"
+﻿@page "/Victorias/Create"
 @using RegistroJugadores.Models
 @using RegistroJugadores.Services
 @inject PartidasService PartidasService
@@ -123,7 +123,7 @@
             Partida.FechaFin = DateTime.UtcNow;
 
         if (await PartidasService.Guardar(Partida))
-            NavigationManager.NavigateTo("/Partidas/Index");
+            NavigationManager.NavigateTo("/Victorias/Index");
         else
             ErrorMessage = "Error al guardar la partida. Por favor, intente nuevamente.";
     }

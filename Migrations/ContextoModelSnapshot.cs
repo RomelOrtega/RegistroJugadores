@@ -34,7 +34,7 @@ namespace RegistroJugadores.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Partidas")
+                    b.Property<double>("Victorias")
                         .HasColumnType("float");
 
                     b.HasKey("JugadorId");
@@ -42,7 +42,7 @@ namespace RegistroJugadores.Migrations
                     b.ToTable("Jugadores");
                 });
 
-            modelBuilder.Entity("RegistroJugadores.Models.Partidas", b =>
+            modelBuilder.Entity("RegistroJugadores.Models.Victorias", b =>
                 {
                     b.Property<int>("PartidaId")
                         .ValueGeneratedOnAdd()
@@ -88,10 +88,10 @@ namespace RegistroJugadores.Migrations
 
                     b.HasIndex("TurnoJugadorId");
 
-                    b.ToTable("Partidas");
+                    b.ToTable("Victorias");
                 });
 
-            modelBuilder.Entity("RegistroJugadores.Models.Partidas", b =>
+            modelBuilder.Entity("RegistroJugadores.Models.Victorias", b =>
                 {
                     b.HasOne("RegistroJugadores.Models.Jugadores", "Ganador")
                         .WithMany()

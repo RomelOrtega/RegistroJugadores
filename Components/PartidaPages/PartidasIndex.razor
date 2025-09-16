@@ -1,4 +1,4 @@
-﻿@page "/Partidas/Index"
+﻿@page "/Victorias/Index"
 @using RegistroJugadores.Models
 @using RegistroJugadores.Services
 @using System.Linq
@@ -7,12 +7,12 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Consulta de Partidas</PageTitle>
+<PageTitle>Consulta de Victorias</PageTitle>
 
 <div class="container mt-1">
     <div class="card shadow-sm">
         <div class="card-header bg-white text-center">
-            <h5 class="mb-0">Index de Partidas</h5>
+            <h5 class="mb-0">Index de Victorias</h5>
         </div>
 
         <div class="card-body">
@@ -124,7 +124,7 @@
                                     <td>@partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy")</td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/Partidas/Edit/@partida.PartidaId" class="btn btn-outline-primary btn-sm" title="Editar">
+                                            <a href="/Victorias/Edit/@partida.PartidaId" class="btn btn-outline-primary btn-sm" title="Editar">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <button class="btn btn-outline-danger btn-sm" title="Eliminar"
@@ -143,7 +143,7 @@
             <!-- Estadísticas rápidas -->
             <div class="card shadow-sm">
                 <div class="card-footer ">
-                    <strong>Total de Partidas:</strong> @TotalPartidas
+                    <strong>Total de Victorias:</strong> @TotalPartidas
                 </div>
             </div>
         </div>
