@@ -6,13 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RegistroJugadores.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial2 : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Victorias",
+                name: "Jugadores",
+                columns: table => new
+                {
+                    JugadorId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Victorias = table.Column<double>(type: "float", nullable: false),
+                    Derrotas = table.Column<int>(type: "int", nullable: false),
+                    Empates = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Jugadores", x => x.JugadorId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Partidas",
                 columns: table => new
                 {
                     PartidaId = table.Column<int>(type: "int", nullable: false)
@@ -39,8 +55,7 @@ namespace RegistroJugadores.Migrations
                         name: "FK_Partidas_Jugadores_Jugador1Id",
                         column: x => x.Jugador1Id,
                         principalTable: "Jugadores",
-                        principalColumn: "JugadorId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "JugadorId");
                     table.ForeignKey(
                         name: "FK_Partidas_Jugadores_Jugador2Id",
                         column: x => x.Jugador2Id,
@@ -57,22 +72,22 @@ namespace RegistroJugadores.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Partidas_GanadorId",
-                table: "Victorias",
+                table: "Partidas",
                 column: "GanadorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Partidas_Jugador1Id",
-                table: "Victorias",
+                table: "Partidas",
                 column: "Jugador1Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Partidas_Jugador2Id",
-                table: "Victorias",
+                table: "Partidas",
                 column: "Jugador2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Partidas_TurnoJugadorId",
-                table: "Victorias",
+                table: "Partidas",
                 column: "TurnoJugadorId");
         }
 
@@ -80,7 +95,10 @@ namespace RegistroJugadores.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Victorias");
+                name: "Partidas");
+
+            migrationBuilder.DropTable(
+                name: "Jugadores");
         }
     }
 }

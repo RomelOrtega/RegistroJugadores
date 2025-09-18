@@ -30,6 +30,12 @@ namespace RegistroJugadores.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JugadorId"));
 
+                    b.Property<int>("Derrotas")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Empates")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -42,7 +48,7 @@ namespace RegistroJugadores.Migrations
                     b.ToTable("Jugadores");
                 });
 
-            modelBuilder.Entity("RegistroJugadores.Models.Victorias", b =>
+            modelBuilder.Entity("RegistroJugadores.Models.Partidas", b =>
                 {
                     b.Property<int>("PartidaId")
                         .ValueGeneratedOnAdd()
@@ -88,10 +94,10 @@ namespace RegistroJugadores.Migrations
 
                     b.HasIndex("TurnoJugadorId");
 
-                    b.ToTable("Victorias");
+                    b.ToTable("Partidas");
                 });
 
-            modelBuilder.Entity("RegistroJugadores.Models.Victorias", b =>
+            modelBuilder.Entity("RegistroJugadores.Models.Partidas", b =>
                 {
                     b.HasOne("RegistroJugadores.Models.Jugadores", "Ganador")
                         .WithMany()
@@ -101,7 +107,7 @@ namespace RegistroJugadores.Migrations
                     b.HasOne("RegistroJugadores.Models.Jugadores", "Jugador1")
                         .WithMany()
                         .HasForeignKey("Jugador1Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("RegistroJugadores.Models.Jugadores", "Jugador2")
