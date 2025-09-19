@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 
+
 namespace RegistroJugadores.Models
 {
     public class Jugadores
