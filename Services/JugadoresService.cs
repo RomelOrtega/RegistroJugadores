@@ -61,5 +61,53 @@ namespace RegistroJugadores.Services
                 .ToListAsync();
         }
 
+        public async Task<List<JugadorEstadistica>> ObtenerEstadisticas()
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            var jugadores = await db.Jugadores.ToListAsync();
+            var lista = new List<JugadorEstadistica>();
+
+            foreach (var jugador in jugadores)
+            {
+                var victorias = await db.Partidas.CountAsync(p => p.GanadorId == jugador.JugadorId);
+                var derrotas = await db.Partidas.CountAsync(p =>
+                    p.EstadoPartida == "Finalizada" &&
+                    p.GanadorId != jugador.JugadorId &&
+                    p.GanadorId != null &&
+                    (p.Jugador1Id == jugador.JugadorId || p.Jugador2Id == jugador.JugadorId));
+                var empates = await db.Partidas.CountAsync(p =>
+                    p.EstadoPartida == "Empate" &&
+                    (p.Jugador1Id == jugador.JugadorId || p.Jugador2Id == jugador.JugadorId));
+
+                lista.Add(new JugadorEstadistica
+                {
+                    JugadorId = jugador.JugadorId,
+                    Nombres = jugador.Nombre,
+                    Victorias = victorias,
+                    Derrotas = derrotas,
+                    Empates = empates
+                });
+            }
+
+            return lista;
+        }
+
+        public class JugadorEstadistica
+        {
+            public int JugadorId { get; set; }
+            public string Nombres { get; set; } = string.Empty;
+            public int Victorias { get; set; }
+            public int Derrotas { get; set; }
+            public int Empates { get; set; }
+        }
+
+        public async Task<Partidas?> ObtenerPartidaConMovimientos(int partidaId)
+        {
+            using var context = DbFactory.CreateDbContext();
+            return await context.Partidas
+                .Include(p => p.Movimientos)
+                .FirstOrDefaultAsync(p => p.PartidaId == partidaId);
+        }
+
     }
 }
