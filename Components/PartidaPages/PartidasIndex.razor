@@ -1,4 +1,4 @@
-﻿@page "/Victorias/Index"
+﻿@page "/Partidas/Index"
 @using RegistroJugadores.Models
 @using RegistroJugadores.Services
 @using System.Linq
@@ -7,274 +7,291 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Consulta de Victorias</PageTitle>
+<PageTitle>Index de Partidas</PageTitle>
 
 <div class="container mt-1">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white text-center">
-            <h5 class="mb-0">Index de Victorias</h5>
-        </div>
+	<div class="card shadow-lg">
+		<div class="card-header bg-white text-center">
+			<h5 class="mb-0">Index de Partidas</h5>
+		</div>
 
-        <div class="card-body">
-            <!-- Filtros -->
-            <div class="row align-items-end mb-3">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Filtrar por:</label>
-                    <InputSelect class="form-select" @bind-Value="Filtro">
-                        <option value="PartidaId">ID Partida</option>
-                        <option value="Jugador">Jugador</option>
-                        <option value="Estado">Estado</option>
-                    </InputSelect>
-                </div>
+		<div class="card-body">
+			<!-- Filtros -->
+			<div class="row align-items-end mb-3">
+				<div class="col-md-3">
+					<label class="form-label fw-bold">Filtrar por:</label>
+					<InputSelect class="form-select" @bind-Value="Filtro">
+						<option value="PartidaId">ID Partida</option>
+						<option value="Jugador">Jugador</option>
+						<option value="Estado">Estado</option>
+					</InputSelect>
+				</div>
 
-                <div class="col-md-5">
-                    <label class="form-label fw-bold">Búsqueda:</label>
-                    <div class="input-group">
-                        @if (Filtro == "Estado")
-                        {
-                            <select class="form-select" @bind="ValorFiltro">
-                                <option value="">-- Todos --</option>
-                                <option value="Esperando">Esperando</option>
-                                <option value="EnCurso">En Curso</option>
-                                <option value="Finalizada">Finalizada</option>
-                                <option value="Cancelada">Cancelada</option>
-                            </select>
-                        }
-                        else
-                        {
-                            <input class="form-control" @bind="ValorFiltro" placeholder="Buscar..." />
-                        }
-                        <button type="button" class="btn btn-primary" @onclick="Buscar">
-                            <i class="bi bi-search"></i> Buscar
-                        </button>
-                    </div>
-                </div>
+				<div class="col-md-5">
+					<label class="form-label fw-bold">Búsqueda:</label>
+					<div class="input-group">
+						@if (Filtro == "Estado")
+						{
+							<select class="form-select" @bind="ValorFiltro">
+								<option value="">-- Todos --</option>
+								<option value="Esperando">Esperando</option>
+								<option value="En curso">En Curso</option>
+								<option value="Finalizada">Finalizada</option>
+								<option value="Empate">Empate</option>
+							</select>
+						}
+						else
+						{
+							<input class="form-control" @bind="ValorFiltro" placeholder="Buscar..." />
+						}
+						<button type="button" class="btn btn-primary" @onclick="Buscar">
+							<i class="bi bi-search"></i> Buscar
+						</button>
+					</div>
+				</div>
 
-                <div class="col-md-4 text-end">
-                    <a href="/Partidas/Create" class="btn btn-success">
-                        <i class="bi bi-plus-circle me-1"></i> Nueva Partida
-                    </a>
-                </div>
-            </div>
+				<div class="col-md-4 text-end">
+					<a href="/Partidas/Create" class="btn btn-success">
+						<i class="bi bi-plus-circle me-1"></i> Crear
+					</a>
+				</div>
+			</div>
 
-            <!-- Tabla de partidas -->
-            <div class="table-responsive">
-                <table class="table table-bordered text-center align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Jugador 1</th>
-                            <th>Jugador 2</th>
-                            <th>Estado</th>
-                            <th>Ganador</th>
-                            <th>Turno</th>
-                            <th>Fecha Inicio</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (ListaPartidas.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="8" class="text-muted">No se encontraron partidas.</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var partida in ListaPartidas)
-                            {
-                                <tr>
-                                    <td>@partida.PartidaId</td>
-                                    <td>
-                                        @partida.Jugador1?.Nombre
-                                    </td>
-                                    <td>
-                                        @if (partida.Jugador2 != null)
-                                        {
-                                            @partida.Jugador2.Nombre
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">Esperando...</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @partida.EstadoPartida
-                                    </td>
-                                    <td>
-                                        @if (partida.Ganador != null)
-                                        {
-                                            @partida.Ganador.Nombre
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (partida.EstadoPartida == "EnCurso" && partida.TurnoJugador != null)
-                                        {
-                                            @partida.TurnoJugador.Nombre
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
-                                    </td>
-                                    <td>@partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="/Victorias/Edit/@partida.PartidaId" class="btn btn-outline-primary btn-sm" title="Editar">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button class="btn btn-outline-danger btn-sm" title="Eliminar"
-                                                    @onclick="() => PrepararEliminacion(partida.PartidaId)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+			<!-- Tabla de partidas -->
+			<div class="table-responsive">
+				<table class="table table-bordered text-center align-middle">
+					<thead class="table-light">
+						<tr>
+							<th>ID</th>
+							<th>Jugador X</th>
+							<th>Jugador O</th>
+							<th>Estado</th>
+							<th>Ganador</th>
+							<th>Turno</th>
+							<th>Estado Tablero</th>
+							<th>Fecha Inicio</th>
+							<th>Opciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (ListaPartidas.Count == 0)
+						{
+							<tr>
+								<td colspan="9" class="text-muted">No se encontraron partidas.</td>
+							</tr>
+						}
+						else
+						{
+							@foreach (var partida in ListaPartidas)
+							{
+								<tr>
+									<td>@partida.PartidaId</td>
+									<td>
+										@partida.Jugador1?.Nombre
+									</td>
+									<td>
+										@if (partida.Jugador2 != null)
+										{
+											@partida.Jugador2.Nombre
+										}
+										else
+										{
+											<span class="text-muted">Esperando...</span>
+										}
+									</td>
+									<td>
+										@partida.EstadoPartida
+									</td>
+									<td>
+										@if (partida.Ganador != null)
+										{
+											@partida.Ganador.Nombre
+										}
+										else
+										{
+											<span class="text-muted">-</span>
+										}
+									</td>
+									<td>
+										@if (partida.EstadoPartida == "En curso" && partida.TurnoJugador != null)
+										{
+											@partida.TurnoJugador.Nombre
+										}
+										else
+										{
+											<span class="text-muted">-</span>
+										}
+									</td>
+									<td>@partida.EstadoTablero</td>
+									<td>@partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy")</td>
+									<td>
+										<div class="btn-group" role="group">
+											<a href="/Partidas/Edit/@partida.PartidaId" class="btn btn-outline-primary btn-sm" title="Editar">
+												<i class="bi bi-pencil"></i>
+											</a>
+											<button class="btn btn-outline-danger btn-sm" title="Eliminar"
+													@onclick="() => PrepararEliminacion(partida.PartidaId)">
+												<i class="bi bi-trash"></i>
+											</button>
+										</div>
+									</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
 
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <!-- Estadísticas rápidas -->
-            <div class="card shadow-sm">
-                <div class="card-footer ">
-                    <strong>Total de Victorias:</strong> @TotalPartidas
-                </div>
-            </div>
-        </div>
-    </div>
+			<!-- Estadísticas horizontales -->
+			<div class="d-flex gap-4 mt-3">
+				<div>
+					<label><strong>Total de Partidas:</strong> @TotalPartidas</label>
+				</div>
+				<div>
+					<label>
+						<strong>Total de Partidas Ganadas:</strong>
+						@ListaPartidasOriginal.Count(p => p.EstadoPartida == "Finalizada" && p.Ganador != null)
+					</label>
+				</div>
+				<div>
+					<label>
+						<strong>Total de Empates:</strong>
+						@ListaPartidasOriginal.Count(p => p.EstadoPartida == "Empate")
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 @if (MostrarModalEliminar)
 {
-    <div class="container">
-        <div class="card shadow-lg">
-            <div class="card-header bg-primary text-white border-bottom-0">
-                <h5 class="card-title text-center mb-0">Eliminar Partida</h5>
-            </div>
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header bg-primary text-white border-bottom-0">
+				<h5 class="card-title text-center mb-0">Eliminar Partida</h5>
+			</div>
 
-            <div class="card-body text-danger py-3">
-                <h6 class="card-title mb-0">¿Estás seguro de que deseas eliminar esta partida?</h6>
-            </div>
+			<div class="card-body text-danger py-3">
+				<h6 class="card-title mb-0">¿Estás seguro de que deseas eliminar esta partida?</h6>
+			</div>
 
-            <div class="card shadow-sm mx-3 mb-3">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0"><strong>Datos de la Partida</strong></h5>
-                </div>
-                <div class="card-body">
-                    @if (PartidaAEliminar != null)
-                    {
-                        <p class="mb-2"><strong>ID Partida:</strong> @PartidaAEliminar.PartidaId</p>
-                        <p class="mb-2"><strong>Jugador 1:</strong> @PartidaAEliminar.Jugador1?.Nombre</p>
-                        <p class="mb-2"><strong>Jugador 2:</strong> @(PartidaAEliminar.Jugador2?.Nombre ?? "Sin jugador")</p>
-                        <p class="mb-2"><strong>Estado:</strong> @PartidaAEliminar.EstadoPartida</p>
-                        <p class="mb-0"><strong>Fecha:</strong> @PartidaAEliminar.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
-                    }
-                </div>
-            </div>
+			<div class="card shadow-sm mx-3 mb-3">
+				<div class="card-header bg-light">
+					<h5 class="card-title mb-0"><strong>Datos de la Partida</strong></h5>
+				</div>
+				<div class="card-body">
+					@if (PartidaAEliminar != null)
+					{
+						<p class="mb-2"><strong>ID Partida:</strong> @PartidaAEliminar.PartidaId</p>
+						<p class="mb-2"><strong>Jugador X:</strong> @PartidaAEliminar.Jugador1?.Nombre</p>
+						<p class="mb-2"><strong>Jugador O:</strong> @(PartidaAEliminar.Jugador2?.Nombre ?? "Sin jugador")</p>
+						<p class="mb-2"><strong>Ganador:</strong> @(PartidaAEliminar.Ganador?.Nombre ?? "Ninguno")</p>
+						<p class="mb-2"><strong>Estado Tablero:</strong> @PartidaAEliminar.EstadoTablero</p>
+						<p class="mb-2"><strong>Estado:</strong> @PartidaAEliminar.EstadoPartida</p>
+						<p class="mb-0"><strong>Fecha:</strong> @PartidaAEliminar.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy")</p>
+					}
+				</div>
+			</div>
 
-            <div class="card-footer bg-white d-flex gap-2 p-3">
-                <button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
-                    <i class="bi bi-arrow-left-circle me-1"></i> Cancelar
-                </button>
-                <button type="button" class="btn btn-outline-danger" @onclick="ConfirmarEliminacion">
-                    <i class="bi bi-trash me-1"></i> Eliminar
-                </button>
-            </div>
-        </div>
-    </div>
-
+			<div class="card-footer bg-white d-flex gap-2 p-3">
+				<button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false">
+					<i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+				</button>
+				<button type="button" class="btn btn-outline-danger" @onclick="ConfirmarEliminacion">
+					<i class="bi bi-trash me-1"></i> Eliminar
+				</button>
+			</div>
+		</div>
+	</div>
 }
 
 @code {
-    public List<Partidas> ListaPartidas { get; set; } = new();
-    public List<Partidas> ListaPartidasOriginal { get; set; } = new();
-    public string Filtro { get; set; } = "PartidaId";
-    public string ValorFiltro { get; set; } = string.Empty;
+	public List<Partidas> ListaPartidas { get; set; } = new();
+	public List<Partidas> ListaPartidasOriginal { get; set; } = new();
+	public string Filtro { get; set; } = "PartidaId";
+	public string ValorFiltro { get; set; } = string.Empty;
 
-    private bool MostrarModalEliminar { get; set; } = false;
-    private int PartidaIdAEliminar { get; set; }
-    private Partidas? PartidaAEliminar { get; set; }
+	private bool MostrarModalEliminar { get; set; } = false;
+	private int PartidaIdAEliminar { get; set; }
+	private Partidas? PartidaAEliminar { get; set; }
 
-    private int TotalPartidas => ListaPartidasOriginal.Count;
+	private int TotalPartidas => ListaPartidasOriginal.Count;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await CargarPartidas();
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await CargarPartidas();
+	}
 
-    private async Task CargarPartidas()
-    {
-        ListaPartidasOriginal = await PartidasService.Listar(p => true);
-        AplicarFiltros();
-    }
+	private async Task CargarPartidas()
+	{
+		ListaPartidasOriginal = await PartidasService.Listar(p => true);
+		AplicarFiltros();
+	}
 
-    private void AplicarFiltros()
-    {
-        var lista = ListaPartidasOriginal.AsEnumerable();
+	private void AplicarFiltros()
+	{
+		var lista = ListaPartidasOriginal.AsEnumerable();
 
-        if (!string.IsNullOrWhiteSpace(ValorFiltro))
-        {
-            switch (Filtro)
-            {
-                case "PartidaId":
-                    if (int.TryParse(ValorFiltro, out int id))
-                    {
-                        lista = lista.Where(p => p.PartidaId == id);
-                    }
-                    break;
+		if (!string.IsNullOrWhiteSpace(ValorFiltro))
+		{
+			switch (Filtro)
+			{
+				case "PartidaId":
+					if (int.TryParse(ValorFiltro, out int id))
+					{
+						lista = lista.Where(p => p.PartidaId == id);
+					}
 
-                case "Jugador":
-                    lista = lista.Where(p =>
-                        (p.Jugador1?.Nombre?.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                        (p.Jugador2?.Nombre?.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase) ?? false));
-                    break;
+					break;
 
-                case "Estado":
-                    lista = lista.Where(p => p.EstadoPartida == ValorFiltro);
-                    break;
+				case "Jugador":
+					lista = lista.Where(p =>
+						(p.Jugador1?.Nombre?.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase) ?? false) ||
+						(p.Jugador2?.Nombre?.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase) ?? false));
+					break;
 
-                case "Fecha":
-                    if (DateTime.TryParse(ValorFiltro, out DateTime fecha))
-                    {
-                        lista = lista.Where(p => p.FechaInicio.Date == fecha.Date);
-                    }
-                    break;
-            }
-        }
+				case "Estado":
+					lista = lista.Where(p => p.EstadoPartida == ValorFiltro);
+					break;
 
-        ListaPartidas = lista.OrderByDescending(p => p.FechaInicio).ToList();
-    }
+				case "Fecha":
+					if (DateTime.TryParse(ValorFiltro, out DateTime fecha))
+					{
+						lista = lista.Where(p => p.FechaInicio.Date == fecha.Date);
+					}
 
-    private async Task Buscar()
-    {
-        AplicarFiltros();
-    }
+					break;
+			}
+		}
 
-    private async Task LimpiarFiltros()
-    {
-        ValorFiltro = string.Empty;
-        await CargarPartidas();
-    }
+		ListaPartidas = lista.OrderByDescending(p => p.FechaInicio).ToList();
+	}
 
-    private void PrepararEliminacion(int partidaId)
-    {
-        PartidaIdAEliminar = partidaId;
-        PartidaAEliminar = ListaPartidas.FirstOrDefault(p => p.PartidaId == partidaId);
-        MostrarModalEliminar = true;
-    }
+	private async Task Buscar()
+	{
+		AplicarFiltros();
+	}
 
-    private async Task ConfirmarEliminacion()
-    {
-        if (await PartidasService.Eliminar(PartidaIdAEliminar))
-        {
-            MostrarModalEliminar = false;
-            await CargarPartidas();
-        }
-    }
+	private async Task LimpiarFiltros()
+	{
+		ValorFiltro = string.Empty;
+		await CargarPartidas();
+	}
+
+	private void PrepararEliminacion(int partidaId)
+	{
+		PartidaIdAEliminar = partidaId;
+		PartidaAEliminar = ListaPartidas.FirstOrDefault(p => p.PartidaId == partidaId);
+		MostrarModalEliminar = true;
+	}
+
+	private async Task ConfirmarEliminacion()
+	{
+		if (await PartidasService.Eliminar(PartidaIdAEliminar))
+		{
+			MostrarModalEliminar = false;
+			await CargarPartidas();
+		}
+	}
 }
