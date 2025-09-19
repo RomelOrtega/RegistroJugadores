@@ -2,20 +2,96 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="RegistroJugadores.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<base href="/" />
+	<link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="app.css" />
+	<link rel="stylesheet" href="RegistroJugadores.styles.css" />
+	<link rel="icon" type="image/png" href="favicon.png" />
+
+	<!-- Estilos CSS integrados directamente en el componente -->
+	<style>
+    .game-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        font-family: sans-serif;
+        padding-top: 2rem;
+    }
+
+    .selection-screen h1,
+    .game-screen h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    .player-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Estilos para el tablero de juego */
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 8px;
+        margin-top: 1rem;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: #f0f0f0;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        font-size: 3rem;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .cell:hover:not(:disabled) {
+        background-color: #e0e0e0;
+    }
+
+    .cell:disabled {
+        cursor: not-allowed;
+    }
+
+    /* Colores para los jugadores */
+    .player-x {
+        color: #E91E63;
+        /* Rosa */
+    }
+
+    .player-o {
+        color: #2196F3;
+        /* Azul */
+    }
+</style>
+
+	<HeadOutlet />
 </head>
 
 <body>
-    <Routes />
-    <script src="_framework/blazor.web.js"></script>
+	<Routes @rendermode="InteractiveServer" />
+	<script src="_framework/blazor.web.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+	<!-- Add chart.js reference if chart components are used in your application. -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<!-- Add sortable.js reference if SortableList component is used in your application. -->
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+
 </body>
 
 </html>
