@@ -1,4 +1,4 @@
-﻿@page "/Victorias/Edit/{PartidaId:int}"
+﻿@page "/Partidas/Edit/{PartidaId:int}"
 @using RegistroJugadores.Models
 @using RegistroJugadores.Services
 @inject PartidasService PartidasService
@@ -77,12 +77,12 @@
 							<div class="card">
 								<div class="card-body">
 									<div class="mb-2">
-										<strong>Inicio:</strong> @Partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+										<strong>Inicio:</strong> @Partida.FechaInicio.ToLocalTime().ToString("dd/MM/yyyy")
 									</div>
 									@if (Partida.FechaFin.HasValue)
 									{
 										<div>
-											<strong>Fin:</strong> @Partida.FechaFin.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+											<strong>Fin:</strong> @Partida.FechaFin.Value.ToLocalTime().ToString("dd/MM/yyyy")
 										</div>
 									}
 									else
@@ -231,7 +231,7 @@ else
 		if (await PartidasService.Eliminar(PartidaId))
 		{
 			MostrarModalEliminar = false;
-			NavigationManager.NavigateTo("/Victorias/Index");
+			NavigationManager.NavigateTo("/Partidas/Index");
 		}
 		else
 		{
