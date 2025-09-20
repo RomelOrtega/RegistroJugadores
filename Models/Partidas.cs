@@ -8,10 +8,12 @@ namespace RegistroJugadores.Models
         [Key]
         public int PartidaId { get; set; }
 
+        [Required(ErrorMessage = "El primer jugador debe ser obligatorio")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debe selecionar un jugador")]
         public int Jugador1Id { get; set; }
         public int? Jugador2Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Debe seleccionar el estado de la partida")]
         [StringLength(20)]
         public string EstadoPartida { get; set; }
 
@@ -36,5 +38,6 @@ namespace RegistroJugadores.Models
 
         [ForeignKey(nameof(TurnoJugadorId))]
         public virtual Jugadores TurnoJugador { get; set; }
+        public virtual ICollection<Movimientos> Movimientos { get; set; } = new List<Movimientos>();
     }
 }
